@@ -1226,7 +1226,7 @@ function manageMenu () {
 	echo "   1) Pridėti naują vartotoją"
 	echo "   2) Panaikinti esamą vartotoją"
 	echo "   3) Pašalinti OpenVPN"
-	echo "   4) Išeiti "
+	echo "   4) exit"
 	until [[ "$MENU_OPTION" =~ ^[1-4]$ ]]; do
 		read -rp "Select an option [1-4]: " MENU_OPTION
 	done
@@ -1242,7 +1242,7 @@ function manageMenu () {
 			PašalintiOpenVPN
 		;;
 		4)
-			Išeiti 0
+			exit 0
 		;;
 	esac
 }
