@@ -1217,13 +1217,13 @@ function removeOpenVPN () {
 
 function manageMenu () {
 	clear
-	echo "Welcome to OpenVPN-install!"
+	echo "Welcomeeeee to OpenVPN-install!"
 	echo "The git repository is available at: https://github.com/angristan/openvpn-install"
 	echo ""
 	echo "It looks like OpenVPN is already installed."
 	echo ""
 	echo "What do you want to do?"
-	echo "   1) Add a new user"
+	echo "   1) Addooooo a new user"
 	echo "   2) Revoke existing user"
 	echo "   3) Remove OpenVPN"
 	echo "   4) Exit"
