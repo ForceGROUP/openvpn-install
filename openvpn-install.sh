@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Secure OpenVPN server installer for Debian, Ubuntu, CentOS, Amazon Linux 2, Fedora and Arch Linux
+# Saugus „OpenVPN“ serverio diegėjas „Debian“, „Ubuntu“, „CentOS“, „Amazon Linux 2“, „Fedora“ ir „Arch Linux“
 # 
 
 function isRoot () {
@@ -23,13 +23,13 @@ function checkOS () {
 
 		if [[ "$ID" == "debian" || "$ID" == "raspbian" ]]; then
 			if [[ ! $VERSION_ID =~ (8|9|10) ]]; then
-				echo "⚠️ Your version of Debian is not supported."
+				echo "⚠️ Jūsų „Debian“ versija nepalaikoma."
 				echo ""
-				echo "However, if you're using Debian >= 9 or unstable/testing then you can continue."
+				echo "Tačiau jei naudojate Debian >= 9 tada galite tęsti."
 				echo "Keep in mind they are not supported, though."
 				echo ""
-				until [[ $CONTINUE =~ (y|n) ]]; do
-					read -rp "Continue? [y/n]: " -e CONTINUE
+				until [[ $CONTINUE =~ (t|n) ]]; do
+					read -rp "Continue? [t/n]: " -e CONTINUE
 				done
 				if [[ "$CONTINUE" = "n" ]]; then
 					exit 1
@@ -43,8 +43,8 @@ function checkOS () {
 				echo "However, if you're using Ubuntu > 17 or beta, then you can continue."
 				echo "Keep in mind they are not supported, though."
 				echo ""
-				until [[ $CONTINUE =~ (y|n) ]]; do
-					read -rp "Continue? [y/n]: " -e CONTINUE
+				until [[ $CONTINUE =~ (t|n) ]]; do
+					read -rp "Continue? [t/n]: " -e CONTINUE
 				done
 				if [[ "$CONTINUE" = "n" ]]; then
 					exit 1
@@ -79,18 +79,18 @@ function checkOS () {
 	elif [[ -e /etc/arch-release ]]; then
 		OS=arch
 	else
-		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2 or Arch Linux system"
+		echo "Panasu kad naudojete Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2 or Arch Linux sistemas"
 		exit 1
 	fi
 }
 
-function initialCheck () {
+function patikrinimas () {
 	if ! isRoot; then
-		echo "Sorry, you need to run this as root"
+		echo "Ka darai,paleisk ant root"
 		exit 1
 	fi
 	if ! tunAvailable; then
-		echo "TUN is not available"
+		echo "TUN negalimas, nepalaikmas"
 		exit 1
 	fi
 	checkOS
@@ -194,15 +194,15 @@ private-address: ::ffff:0:0/96' > /etc/unbound/openvpn.conf
 }
 
 function installQuestions () {
-	echo "Welcomeeeeeee to the OpenVPN installer!"
-	echo "The git repository is available at: buuuum"
+	echo "Sveiki prisijungia prie OpenVPN-instaliavimo!"
+	echo "Git saugyklą galite rasti: https://github.com//openvpn-install"
 	echo ""
 
-	echo "I need to ask you a few questions before starting the setup."
-	echo "You can leave the default options and just press enter if you are ok with them."
+	echo "Prieš pradėdamas instaliavima, turiu užduoti keletą klausimų."
+	echo "Galite palikti numatytąsias parinktis ir tiesiog paspauskite „Enter“, jei jums viskas gerai."
 	echo ""
-	echo "I need to know the IPv4 address of the network interface you want OpenVPN listening to."
-	echo "Unless your server is behind NAT, it should be your public IPv4 address."
+	echo "Aš turiu žinoti tinklo sąsajos, kurias norite naudoti „OpenVPN“, IPv4 adresuj."
+	echo "Jei jūsų serveris nėra už NAT, tai turėtų būti jūsų viešas IPv4 adresas."
 
 	# Detect public IPv4 address and pre-fill for the user
 	IP=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
@@ -213,15 +213,15 @@ function installQuestions () {
 	# If $IP is a private IP address, the server must be behind NAT
 	if echo "$IP" | grep -qE '^(10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.|192\.168)'; then
 		echo ""
-		echo "It seems this server is behind NAT. What is its public IPv4 address or hostname?"
-		echo "We need it for the clients to connect to the server."
+		echo "Atrodo, kad šis serveris yra uz NAT. Koks yra jo viešas IPv4 adresas arba pagrindinio kompiuterio vardas-hostname?"
+		echo "Mums to reikia, kad Vartotojai galėtų prisijungti prie serverio."
 		until [[ "$ENDPOINT" != "" ]]; do
 			read -rp "Public IPv4 address or hostname: " -e ENDPOINT
 		done
 	fi
 
 	echo ""
-	echo "Checking for IPv6 connectivity..."
+	echo "Tikrinama, ar nėra „IPv6“ ryšio..."
 	echo ""
 	# "ping6" and "ping -6" availability varies depending on the distribution
 	if type ping6 > /dev/null 2>&1; then
@@ -230,19 +230,19 @@ function installQuestions () {
 		PING6="ping -6 -c3 ipv6.google.com > /dev/null 2>&1"
 	fi
 	if eval "$PING6"; then
-		echo "Your host appears to have IPv6 connectivity."
-		SUGGESTION="y"
+		echo "Atrodo, kad jūsų kompiuteris turi IPv6 ryšį."
+		SUGGESTION="t"
 	else
-		echo "Your host does not appear to have IPv6 connectivity."
+		echo "Neatrodo, kad jūsų kompiuteris turi IPv6 ryšį."
 		SUGGESTION="n"
 	fi
 	echo ""
 	# Ask the user if they want to enable IPv6 regardless its availability.
-	until [[ $IPV6_SUPPORT =~ (y|n) ]]; do
-		read -rp "Do you want to enable IPv6 support (NAT)? [y/n]: " -e -i $SUGGESTION IPV6_SUPPORT
+	until [[ $IPV6_SUPPORT =~ (t|n) ]]; do
+		read -rp "Ar norite įgalinti IPv6 palaikymą (NAT)? [t/n]: " -e -i $SUGGESTION IPV6_SUPPORT
 	done
 	echo ""
-	echo "What port do you want OpenVPN to listen to?"
+	echo "Kokio porto norite, kad „OpenVPN“ veiktu?"
 	echo "   1) Default: 1194"
 	echo "   2) Custom"
 	echo "   3) Random [49152-65535]"
@@ -265,8 +265,8 @@ function installQuestions () {
 		;;
 	esac
 	echo ""
-	echo "What protocol do you want OpenVPN to use?"
-	echo "UDP is faster. Unless it is not available, you shouldn't use TCP."
+	echo "Kokį protokolą norite naudoti „OpenVPN“?"
+	echo "UDP yra greitesnis. nei TCP."
 	echo "   1) UDP"
 	echo "   2) TCP"
 	until [[ "$PROTOCOL_CHOICE" =~ ^[1-2]$ ]]; do
@@ -281,7 +281,7 @@ function installQuestions () {
 		;;
 	esac
 	echo ""
-	echo "What DNS resolvers do you want to use with the VPN?"
+	echo "Kokius DNS norite naudoti kartu su VPN?"
 	echo "   1) Current system resolvers (from /etc/resolv.conf)"
 	echo "   2) Self-hosted DNS Resolver (Unbound)"
 	echo "   3) Cloudflare (Anycast: worldwide)"
@@ -298,14 +298,14 @@ function installQuestions () {
 		read -rp "DNS [1-12]: " -e -i 3 DNS
 			if [[ $DNS == 2 ]] && [[ -e /etc/unbound/unbound.conf ]]; then
 				echo ""
-				echo "Unbound is already installed."
+				echo "Apribojimai jau įdiegti."
 				echo "You can allow the script to configure it in order to use it from your OpenVPN clients"
-				echo "We will simply add a second server to /etc/unbound/unbound.conf for the OpenVPN subnet."
-				echo "No changes are made to the current configuration."
+				echo "Pridesime mes /etc/unbound/unbound.conf  OpenVPN ."
+				echo "Negalima keisti ar dar atlikti kokiu tai pakeitimu faile."
 				echo ""
 
-				until [[ $CONTINUE =~ (y|n) ]]; do
-					read -rp "Apply configuration changes to Unbound? [y/n]: " -e CONTINUE
+				until [[ $CONTINUE =~ (t|n) ]]; do
+					read -rp "Taikykiti konfigūracijos pakeitimus „Apribojimams“? [t/n]: " -e CONTINUE
 				done
 				if [[ $CONTINUE = "n" ]];then
 					# Break the loop and cleanup
@@ -325,17 +325,17 @@ function installQuestions () {
 			fi
 	done
 	echo ""
-	echo "Do you want to use compression? It is not recommended since the VORACLE attack make use of it."
-	until [[ $COMPRESSION_ENABLED =~ (y|n) ]]; do
-		read -rp"Enable compression? [y/n]: " -e -i n COMPRESSION_ENABLED
+	echo "Ar norite naudoti glaudinimą? Nerekomenduojama, nes VORACLE ataka tuo naudojasi."
+	until [[ $COMPRESSION_ENABLED =~ (t|n) ]]; do
+		read -rp"Įgalinti glaudinimą? [t/n]: " -e -i n COMPRESSION_ENABLED
 	done
-	if [[ $COMPRESSION_ENABLED == "y" ]];then
-		echo "Choose which compression algorithm you want to use: (they are ordered by efficiency)"
+	if [[ $COMPRESSION_ENABLED == "t" ]];then
+		echo "Pasirinkite, kurį glaudinimo algoritmą norite naudoti: (jie yra suskirstyti pagal efektyvumą)"
 		echo "   1) LZ4-v2"
 		echo "   2) LZ4"
 		echo "   3) LZ0"
 		until [[ $COMPRESSION_CHOICE =~ ^[1-3]$ ]]; do
-			read -rp"Compression algorithm [1-3]: " -e -i 1 COMPRESSION_CHOICE
+			read -rp"Suspaudimo algoritmas [1-3]: " -e -i 1 COMPRESSION_CHOICE
 		done
 		case $COMPRESSION_CHOICE in
 			1)
@@ -350,13 +350,13 @@ function installQuestions () {
 		esac
 	fi
 	echo ""
-	echo "Do you want to customize encryption settings?"
-	echo "Unless you know what you're doing, you should stick with the default parameters provided by the script."
-	echo "Note that whatever you choose, all the choices presented in the script are safe. (Unlike OpenVPN's defaults)"
-	echo "See https://github.com/angristan/openvpn-install#security-and-encryption to learn more."
+	echo "Ar norite tinkinti šifravimo parametrus?"
+	echo "Jei nežinote, ką darote, turėtumėte laikytis numatytųjų scenarijaus parametrų tai yra ENTER."
+	echo "Atminkite, kad nesvarbu, ką pasirinksite, visi scenarijuje pateikti pasirinkimai yra saugūs. (Skirtingai nuo „OpenVPN“ numatytu)"
+	echo "Norėdami sužinoti daugiau, apsilankykite     ....."
 	echo ""
-	until [[ $CUSTOMIZE_ENC =~ (y|n) ]]; do
-		read -rp "Customize encryption settings? [y/n]: " -e -i n CUSTOMIZE_ENC
+	until [[ $CUSTOMIZE_ENC =~ (t|n) ]]; do
+		read -rp "Pasirinkite šifravimo parametrus? [t/n]: " -e -i n CUSTOMIZE_ENC
 	done
 	if [[ $CUSTOMIZE_ENC == "n" ]];then
 		# Use default, sane and fast parameters
@@ -370,7 +370,7 @@ function installQuestions () {
 		TLS_SIG="1" # tls-crypt
 	else
 		echo ""
-		echo "Choose which cipher you want to use for the data channel:"
+		echo "Pasirinkite, kurį šifrą norite naudoti duomenų kanalui:"
 		echo "   1) AES-128-GCM (recommended)"
 		echo "   2) AES-192-GCM"
 		echo "   3) AES-256-GCM"
@@ -378,7 +378,7 @@ function installQuestions () {
 		echo "   5) AES-192-CBC"
 		echo "   6) AES-256-CBC"
 		until [[ "$CIPHER_CHOICE" =~ ^[1-6]$ ]]; do
-			read -rp "Cipher [1-6]: " -e -i 1 CIPHER_CHOICE
+			read -rp "Šifras [1-6]: " -e -i 1 CIPHER_CHOICE
 		done
 		case $CIPHER_CHOICE in
 			1)
@@ -401,7 +401,7 @@ function installQuestions () {
 			;;
 		esac
 		echo ""
-		echo "Choose what kind of certificate you want to use:"
+		echo "Pasirinkite kokį sertifikata norite naudoti:"
 		echo "   1) ECDSA (recommended)"
 		echo "   2) RSA"
 		until [[ $CERT_TYPE =~ ^[1-2]$ ]]; do
@@ -979,28 +979,28 @@ if [[ $COMPRESSION_ENABLED == "y"  ]]; then
 	echo "compress $COMPRESSION_ALG" >> /etc/openvpn/client-template.txt
 fi
 
-	# Generate the custom client.ovpn
-	newClient
-	echo "If you want to add more clients, you simply need to run this script another time!"
+	# Sukurti client.ovpn
+	naujasVartotojas
+	echo "Jei norite pridėti daugiau Vartotoju, jums tiesiog reikia paleisti šį skripta dar kartą!"
 }
 
-function newClient () {
+function naujasVartotojas () {
 	echo ""
-	echo "Tell me a name for the client."
-	echo "Use one word only, no special characters."
+	echo "Pasakyk man kliento vardą."
+	echo "Naudokite tik vieną žodį, jokių specialių ženklų nereikia."
 
 	until [[ "$CLIENT" =~ ^[a-zA-Z0-9_]+$ ]]; do
-		read -rp "Client name: " -e CLIENT
+		read -rp "Vartotojas: " -e CLIENT
 	done
 
 	echo ""
-	echo "Do you want to protect the configuration file with a password?"
-	echo "(e.g. encrypt the private key with a password)"
-	echo "   1) Add a passwordless client"
-	echo "   2) Use a password for the client"
+	echo "Ar norite apsaugoti openVPN failą slaptažodžiu?"
+	echo "(pvz. užšifruokite asmeninį Vartotoja slaptažodžiu)"
+	echo "   1) Pridėkite Vartotoja be slaptažodžio"
+	echo "   2) Naudokite slaptažodį Vartotojui"
 
 	until [[ "$PASS" =~ ^[1-2]$ ]]; do
-		read -rp "Select an option [1-2]: " -e -i 1 PASS
+		read -rp "Pasirinkite parinktį [1-2]: " -e -i 1 PASS
 	done
 
 	cd /etc/openvpn/easy-rsa/ || return
@@ -1009,7 +1009,7 @@ function newClient () {
 			./easyrsa build-client-full "$CLIENT" nopass
 		;;
 		2)
-		echo "⚠️ You will be asked for the client password below ⚠️"
+		echo "⚠️ Jūsų paprašys pateikti Vartotojo slaptažodį žemiau ⚠️"
 			./easyrsa build-client-full "$CLIENT"
 		;;
 	esac
@@ -1061,27 +1061,27 @@ function newClient () {
 	} >> "$homeDir/$CLIENT.ovpn"
 
 	echo ""
-	echo "Client $CLIENT added, the configuration file is available at $homeDir/$CLIENT.ovpn."
-	echo "Download the .ovpn file and import it in your OpenVPN client."
+	echo "Vartotojas $CLIENT pridetas, galima rasti $homeDir/$CLIENT.ovpn."
+	echo "Parsisiusk .ovpn faila ir idek y OpenVPN."
 
 	exit 0
 }
 
-function revokeClient () {
+function PanaikintiVartotoja () {
 	NUMBEROFCLIENTS=$(tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep -c "^V")
 	if [[ "$NUMBEROFCLIENTS" = '0' ]]; then
 		echo ""
-		echo "You have no existing clients!"
+		echo "Neturite Vartotoju!"
 		exit 1
 	fi
 
 	echo ""
-	echo "Select the existing client certificate you want to revoke"
+	echo "Pasirinkite esamą vartotoją, kurį norite istrinti"
 	tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep "^V" | cut -d '=' -f 2 | nl -s ') '
 	if [[ "$NUMBEROFCLIENTS" = '1' ]]; then
-		read -rp "Select one client [1]: " CLIENTNUMBER
+		read -rp "Pasirinkite vieną klientą [1]: " CLIENTNUMBER
 	else
-		read -rp "Select one client [1-$NUMBEROFCLIENTS]: " CLIENTNUMBER
+		read -rp "Pasirinkite vieną klientą [1-$NUMBEROFCLIENTS]: " CLIENTNUMBER
 	fi
 
 	CLIENT=$(tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep "^V" | cut -d '=' -f 2 | sed -n "$CLIENTNUMBER"p)
@@ -1100,19 +1100,19 @@ function revokeClient () {
 	sed -i "s|^$CLIENT,.*||" /etc/openvpn/ipp.txt
 
 	echo ""
-	echo "Certificate for client $CLIENT revoked."
+	echo "openVPN Vartotojui $CLIENT panaikintas."
 }
 
-function removeUnbound () {
+function apribojimai () {
 	# Remove OpenVPN-related config
 	sed -i 's|include: \/etc\/unbound\/openvpn.conf||' /etc/unbound/unbound.conf
 	rm /etc/unbound/openvpn.conf
 	systemctl restart unbound
 
-	until [[ $REMOVE_UNBOUND =~ (y|n) ]]; do
+	until [[ $REMOVE_UNBOUND =~ (t|n) ]]; do
 		echo ""
-		echo "If you were already using Unbound before installing OpenVPN, I removed the configuration related to OpenVPN."
-		read -rp "Do you want to completely remove Unbound? [y/n]: " -e REMOVE_UNBOUND
+		echo "Jei prieš diegdami „OpenVPN“ jau naudojote „Apribojimus“, pašalinau su „OpenVPN“ susijusią konfigūraciją."
+		read -rp "Ar norite visiškai pašalinti Apribojimus? [t/n]: " -e REMOVE_UNBOUND
 	done
 
 	if [[ "$REMOVE_UNBOUND" = 'y' ]]; then
@@ -1132,18 +1132,18 @@ function removeUnbound () {
 		rm -rf /etc/unbound/
 
 		echo ""
-		echo "Unbound removed!"
+		echo "Apribojimai pašalinti!"
 	else
 		echo ""
-		echo "Unbound wasn't removed."
+		echo "Apribojimai nebuvo pašalinti."
 	fi
 }
 
-function removeOpenVPN () {
+function PašalintiOpenVPN () {
 	echo ""
 	# shellcheck disable=SC2034
-	read -rp "Do you really want to remove OpenVPN? [y/n]: " -e -i n REMOVE
-	if [[ "$REMOVE" = 'y' ]]; then
+	read -rp "Do you really want to remove OpenVPN? [t/n]: " -e -i n REMOVE
+	if [[ "$REMOVE" = 't' ]]; then
 		# Get OpenVPN port from the configuration
 		PORT=$(grep '^port ' /etc/openvpn/server.conf | cut -d " " -f 2)
 
@@ -1205,20 +1205,20 @@ function removeOpenVPN () {
 
 		# Unbound
 		if [[ -e /etc/unbound/openvpn.conf ]]; then
-			removeUnbound
+			apribojimai
 		fi
 		echo ""
-		echo "OpenVPN removed!"
+		echo "OpenVPN pasalintas!"
 	else
 		echo ""
-		echo "Removal aborted!"
+		echo "Atsaukta!"
 	fi
 }
 
-function manageMenu () {
+function priMENUistr () {
 	clear
 	echo "Sveiki prisijungia prie OpenVPN-instaliavimo!"
-	echo "„Git“ saugyklą galite rasti: https://github.com/girteka/openvpn-install"
+	echo "Git saugyklą galite rasti: https://github.com//openvpn-install"
 	echo ""
 	echo "Atrodo OpenVPN jau įdiegta."
 	echo ""
@@ -1226,9 +1226,9 @@ function manageMenu () {
 	echo "   1) Pridėti naują vartotoją"
 	echo "   2) Panaikinti esamą vartotoją"
 	echo "   3) Pašalinti OpenVPN"
-	echo "   4) exit"
+	echo "   4) Exit"
 	until [[ "$MENU_OPTION" =~ ^[1-4]$ ]]; do
-		read -rp "Select an option [1-4]: " MENU_OPTION
+		read -rp "Pasirinkite parinktį [1-4]: " MENU_OPTION
 	done
 
 	case $MENU_OPTION in
@@ -1247,12 +1247,12 @@ function manageMenu () {
 	esac
 }
 
-# Check for root, TUN, OS...
-Patikrinimas
+# Patikrinimas root, TUN, OS...
+patikrinimas
 
-# Check if OpenVPN is already installed
+# Patrikrina ar openVPN jau instaliotas
 if [[ -e /etc/openvpn/server.conf ]]; then
-	manageMenu
+	priMENUistr
 else
 	installOpenVPN
 fi
