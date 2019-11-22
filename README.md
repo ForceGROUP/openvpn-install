@@ -17,3 +17,10 @@
 | Ubuntu 19.04   |  ❌  |  ✅  |   ✅  |   ✅  |
 
 
+INSTALIAVIMAS  
+Reikia root teisiu 
+
+curl -O https://raw.githubusercontent.com/ForceGROUP/openvpn-install/master/openvpn-Force.sh
+chmod +x openvpn-Force.sh
+
+./openvpn-Force.sh
