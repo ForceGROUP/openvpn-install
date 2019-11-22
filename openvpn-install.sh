@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Saugus „OpenVPN“ serverio diegėjas „Debian“, „Ubuntu“, „CentOS“, „Amazon Linux 2“, „Fedora“ ir „Arch Linux“
-# 
+# ForceGROUP
 
 function isRoot () {
 	if [ "$EUID" -ne 0 ]; then
@@ -25,8 +25,8 @@ function checkOS () {
 			if [[ ! $VERSION_ID =~ (8|9|10) ]]; then
 				echo "⚠️ Jūsų „Debian“ versija nepalaikoma."
 				echo ""
-				echo "Tačiau jei naudojate Debian >= 9 tada galite tęsti."
-				echo "Keep in mind they are not supported, though."
+				echo "Tačiau jei naudojate Debian >= 9 tada galesite tęsti."
+				echo "Atminkite, kad jie nepalaikomi."
 				echo ""
 				until [[ $CONTINUE =~ (t|n) ]]; do
 					read -rp "Continue? [t/n]: " -e CONTINUE
@@ -38,10 +38,10 @@ function checkOS () {
 		elif [[ "$ID" == "ubuntu" ]];then
 			OS="ubuntu"
 			if [[ ! $VERSION_ID =~ (16.04|18.04|19.04) ]]; then
-				echo "⚠️ Your version of Ubuntu is not supported."
+				echo "⚠️ Jūsų Ubuntu versija nepalaikoma."
 				echo ""
-				echo "However, if you're using Ubuntu > 17 or beta, then you can continue."
-				echo "Keep in mind they are not supported, though."
+				echo "Tačiau jei naudojate > 17 or beta, tada galesite tęsti."
+				echo "Atminkite, kad jie nepalaikomi."
 				echo ""
 				until [[ $CONTINUE =~ (t|n) ]]; do
 					read -rp "Continue? [t/n]: " -e CONTINUE
@@ -57,9 +57,9 @@ function checkOS () {
 		if [[ "$ID" = "centos" ]]; then
 			OS="centos"
 			if [[ ! $VERSION_ID =~ (7|8) ]]; then
-				echo "⚠️ Your version of CentOS is not supported."
+				echo "⚠️ Jūsų CentOS versija nepalaikoma."
 				echo ""
-				echo "The script only support CentOS 7."
+				echo "Skirtas tik CentOS 7."
 				echo ""
 				exit 1
 			fi
@@ -67,9 +67,9 @@ function checkOS () {
 		if [[ "$ID" = "amzn" ]]; then
 			OS="amzn"
 			if [[ ! $VERSION_ID == "2" ]]; then
-				echo "⚠️ Your version of Amazon Linux is not supported."
+				echo "⚠️ Jūsų Amazon versija nepalaikoma."
 				echo ""
-				echo "The script only support Amazon Linux 2."
+				echo "Skirtas tik Amazon Linux 2."
 				echo ""
 				exit 1
 			fi
@@ -195,7 +195,7 @@ private-address: ::ffff:0:0/96' > /etc/unbound/openvpn.conf
 
 function installQuestions () {
 	echo "Sveiki prisijungia prie OpenVPN-instaliavimo!"
-	echo "Git saugyklą galite rasti: https://github.com//openvpn-install"
+	echo "Saugyklą galite rasti: Telegram ForceGROUP"
 	echo ""
 
 	echo "Prieš pradėdamas instaliavima, turiu užduoti keletą klausimų."
@@ -431,7 +431,7 @@ function installQuestions () {
 			;;
 			2)
 				echo ""
-				echo "Choose which size you want to use for the certificate's RSA key:"
+				echo "Pasirinkite, kurį dydį norite naudoti sertifikato RSA raktui:"
 				echo "   1) 2048 bits (recommended)"
 				echo "   2) 3072 bits"
 				echo "   3) 4096 bits"
@@ -452,7 +452,7 @@ function installQuestions () {
 			;;
 		esac
 		echo ""
-		echo "Choose which cipher you want to use for the control channel:"
+		echo "Pasirinkite, kurį šifrą norite naudoti valdymo kanale:"
 		case $CERT_TYPE in
 			1)
 				echo "   1) ECDHE-ECDSA-AES-128-GCM-SHA256 (recommended)"
@@ -486,7 +486,7 @@ function installQuestions () {
 			;;
 		esac
 		echo ""
-		echo "Choose what kind of Diffie-Hellman key you want to use:"
+		echo "Pasirinkite, kokį „Diffie-Hellman“ raktą norite naudoti:"
 		echo "   1) ECDH (recommended)"
 		echo "   2) DH"
 		until [[ $DH_TYPE =~ [1-2] ]]; do
@@ -495,7 +495,7 @@ function installQuestions () {
 		case $DH_TYPE in
 			1)
 				echo ""
-				echo "Choose which curve you want to use for the ECDH key:"
+				echo "Pasirinkite kreivę, kurią norite naudoti ECDH:"
 				echo "   1) prime256v1 (recommended)"
 				echo "   2) secp384r1"
 				echo "   3) secp521r1"
@@ -516,7 +516,7 @@ function installQuestions () {
 			;;
 			2)
 				echo ""
-				echo "Choose what size of Diffie-Hellman key you want to use:"
+				echo "Pasirinkite, kokį „Diffie-Hellman“ rakto dydį norite naudoti:"
 				echo "   1) 2048 bits (recommended)"
 				echo "   2) 3072 bits"
 				echo "   3) 4096 bits"
@@ -539,16 +539,16 @@ function installQuestions () {
 		echo ""
 		# The "auth" options behaves differently with AEAD ciphers
 		if [[ "$CIPHER" =~ CBC$ ]]; then
-			echo "The digest algorithm authenticates data channel packets and tls-auth packets from the control channel."
+			echo "Algoritmas autentifikuoja duomenų kanalo paketus ir tls-auth paketus iš valdymo kanalo."
 		elif [[ "$CIPHER" =~ GCM$ ]]; then
-			echo "The digest algorithm authenticates tls-auth packets from the control channel."
+			echo "Algoritmas autentifikuoja „tls-auth“ paketus iš valdymo kanalo."
 		fi
-		echo "Which digest algorithm do you want to use for HMAC?"
+		echo "Kurį algoritmą norite naudoti HMAC?"
 		echo "   1) SHA-256 (recommended)"
 		echo "   2) SHA-384"
 		echo "   3) SHA-512"
 		until [[ $HMAC_ALG_CHOICE =~ ^[1-3]$ ]]; do
-			read -rp "Digest algorithm [1-3]: " -e -i 1 HMAC_ALG_CHOICE
+			read -rp "Pasirink algoritma [1-3]: " -e -i 1 HMAC_ALG_CHOICE
 		done
 		case $HMAC_ALG_CHOICE in
 			1)
@@ -562,20 +562,20 @@ function installQuestions () {
 			;;
 		esac
 		echo ""
-		echo "You can add an additional layer of security to the control channel with tls-auth and tls-crypt"
-		echo "tls-auth authenticates the packets, while tls-crypt authenticate and encrypt them."
+		echo "Valdymo kanale galite pridėti papildomą sauga naudodami tls-auth ir tls-crypt"
+		echo "tls-auth atpažįsta paketus, o tls-crypt juos autentifikuoja ir užšifruoja."
 		echo "   1) tls-crypt (recommended)"
 		echo "   2) tls-auth"
 		until [[ $TLS_SIG =~ [1-2] ]]; do
-				read -rp "Control channel additional security mechanism [1-2]: " -e -i 1 TLS_SIG
+				read -rp "Valdymo kanalo papildomas apsaugos mechanizmas [1-2]: " -e -i 1 TLS_SIG
 		done
 	fi
 	echo ""
-	echo "Okay, that was all I needed. We are ready to setup your OpenVPN server now."
-	echo "You will be able to generate a client at the end of the installation."
+	echo "Gerai, viskas, ko man reikėjo. Dabar esame pasirengę instalioti jūsų „OpenVPN“ serverį."
+	echo "Gaigia diegima ,galesite sugeneruoti savo Vartotoja."
 	APPROVE_INSTALL=${APPROVE_INSTALL:-n}
 	if [[ $APPROVE_INSTALL =~ n ]]; then
-		read -n1 -r -p "Press any key to continue..."
+		read -n1 -r -p "Paspauskite bet kurį klavišą norėdami tęsti..."
 	fi
 }
 
@@ -1062,7 +1062,7 @@ function naujasVartotojas () {
 
 	echo ""
 	echo "Vartotojas $CLIENT pridetas, galima rasti $homeDir/$CLIENT.ovpn."
-	echo "Parsisiusk .ovpn faila ir idek y OpenVPN."
+	echo "Parsisiusk .ovpn faila ir idek y OpenVPN. ForceGROUP"
 
 	exit 0
 }
@@ -1142,7 +1142,7 @@ function apribojimai () {
 function PašalintiOpenVPN () {
 	echo ""
 	# shellcheck disable=SC2034
-	read -rp "Do you really want to remove OpenVPN? [t/n]: " -e -i n REMOVE
+	read -rp "Tikrai nori istrinti openVPN? [t/n]: " -e -i n REMOVE
 	if [[ "$REMOVE" = 't' ]]; then
 		# Get OpenVPN port from the configuration
 		PORT=$(grep '^port ' /etc/openvpn/server.conf | cut -d " " -f 2)
@@ -1218,7 +1218,7 @@ function PašalintiOpenVPN () {
 function priMENUistr () {
 	clear
 	echo "Sveiki prisijungia prie OpenVPN-instaliavimo!"
-	echo "Git saugyklą galite rasti: https://github.com//openvpn-install"
+	echo "Saugyklą galite rasti: Telegram ForceGROUP"
 	echo ""
 	echo "Atrodo OpenVPN jau įdiegta."
 	echo ""
