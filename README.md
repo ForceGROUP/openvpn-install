@@ -1,4 +1,4 @@
-# Plaikoma
+# Palaikoma 
 
 
 |                | i386 | amd64 | armhf | arm64 |
