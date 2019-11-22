@@ -1217,8 +1217,8 @@ function removeOpenVPN () {
 
 function manageMenu () {
 	clear
-	echo "Welcomeeeee to OpenVPN-install!"
-	echo "The git repository is available at: https://github.com/angristan/openvpn-install"
+	echo "Sveiki prisijungia prie OpenVPN-instaliavimo!"
+	echo "„Git“ saugyklą galite rasti: https://github.com/girteka/openvpn-install"
 	echo ""
 	echo "Atrodo OpenVPN jau įdiegta."
 	echo ""
@@ -1226,7 +1226,7 @@ function manageMenu () {
 	echo "   1) Pridėti naują vartotoją"
 	echo "   2) Panaikinti esamą vartotoją"
 	echo "   3) Pašalinti OpenVPN"
-	echo "   4) "
+	echo "   4) Išeiti "
 	until [[ "$MENU_OPTION" =~ ^[1-4]$ ]]; do
 		read -rp "Select an option [1-4]: " MENU_OPTION
 	done
